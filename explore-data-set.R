@@ -24,7 +24,7 @@ econCorMelt <- econCor %>% melt(varnames=c("x", "y"),value.name="Correlation")
 candidates <- econCorMelt %>% filter(x != y & abs(Correlation) > 0.6) %>% arrange(Correlation)
 
 ggplot(econCorMelt, aes(x=x, y=y)) + 
-  geom_tile(aes(fill=Correlation, label=Correlation)) +
+  geom_tile(aes(fill=Correlation, label=Correlation), colour = "black") +
   geom_text(label = round(econCorMelt$Correlation, 2)) +
   scale_fill_gradient2(low=muted("red"), 
                        mid="white", 

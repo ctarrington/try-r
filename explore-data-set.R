@@ -20,9 +20,9 @@ GGally::ggpairs(economics[,c(1,5)])
 GGally::ggpairs(economics[,c(1,6)])
 
 econCor <- economics[, c(2:6)] %>% cor
-econCorMelt <- econCor %>% melt(varnames=c("x", "y"),value.name="Correlation") 
-candidates <- econCorMelt %>% filter(x != y & abs(Correlation) > 0.6) %>% arrange(Correlation)
-
+econCorMelt <- econCor %>% melt(varnames=c("x", "y"),value.name="Correlation") %>% filter(x != y)
+candidates <- econCorMelt %>% filter(abs(Correlation) > 0.6) %>% arrange(Correlation)
+View(candidates)
 ggplot(econCorMelt, aes(x=x, y=y)) + 
   geom_tile(aes(fill=Correlation, label=Correlation), colour = "black") +
   geom_text(label = round(econCorMelt$Correlation, 2)) +

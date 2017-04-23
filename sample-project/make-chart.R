@@ -5,17 +5,7 @@ cat("\014")
 dev.off(dev.list()["RStudioGD"])
 
 
-mpg <- ggplot2::mpg
-
-ggplot(data = mpg) +
-  geom_point(mapping = aes(x = displ, y = hwy, color = class))
-
-ggplot(data = mpg) +
-  geom_point(mapping = aes(x = cyl, y = hwy))
-
-ggplot(data = mpg) +
-  geom_point(mapping = aes(x = class, y = hwy))
-
+mpg <- ggplot2::mpg %>% filter(class != "2seater")
 
 mpg %>%
   summarise_all(funs(n_distinct(.)))
@@ -35,12 +25,29 @@ View(
   ,"High HWY MPG"
 )
     
+View(
+  mpg %>% 
+    filter(manufacturer == "audi") %>% 
+    select(class, displ, cyl) %>% 
+    distinct %>%
+    arrange(class, displ, cyl)
+    , "Audi"
+)
 
 mpg %>% 
   filter(manufacturer == "audi") %>% 
-  select(class, displ, cyl, hwy) %>% 
-  distinct %>%
-  arrange(hwy,class, displ, cyl) %>%
   ggplot() + 
-    geom_point(mapping = aes(x = displ, y = hwy, color = cyl)) +
-    labs(title = "Audi")
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) +
+  labs(title = "Audi")
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class)) +
+  geom_smooth()
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~class, nrow = 2)
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
+  geom_smooth()

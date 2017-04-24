@@ -12,37 +12,40 @@ mpg %>%
 
 View(
   mpg %>%
-    select(manufacturer, class, drv, fl, year) %>%
-    distinct %>%
-    arrange(manufacturer, class, drv, fl)
-  ,"Overview"
-)
-
-View(
-  mpg %>%
     filter(hwy > 35) %>%
     arrange(hwy, manufacturer)
   ,"High HWY MPG"
 )
-    
-View(
+
+computed_cars <- 
   mpg %>% 
-    filter(manufacturer == "audi") %>% 
-    select(class, displ, cyl) %>% 
-    distinct %>%
-    arrange(class, displ, cyl)
-    , "Audi"
-)
+  group_by(manufacturer, year, displ, class) %>% 
+  summarize(
+    models = n(),
+    mean.hwy = mean(hwy, na.rm = TRUE)
+  )
+
+computed_cars %>% 
+  ggplot() + 
+  geom_point(mapping = aes(x = displ, y = mean.hwy, color = class)) +
+  facet_wrap(~manufacturer, nrow = 3) +
+  labs(title = "Mean HWY Values")
 
 mpg %>% 
-  filter(manufacturer == "audi") %>% 
   ggplot() + 
   geom_point(mapping = aes(x = displ, y = hwy, color = class)) +
-  labs(title = "Audi")
+  facet_wrap(~manufacturer, nrow = 3) +
+  labs(title = "Raw HWY Values")
 
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_point(mapping = aes(color = class)) +
   geom_smooth()
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class)) +
+  geom_smooth(data = filter(mpg, year == 1999), mapping = aes(linetype = "1999")) +
+  geom_smooth(data = filter(mpg, year == 2008), mapping = aes(linetype = "2008"))
+
 
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
   geom_point() +
@@ -51,3 +54,10 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
 
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) +
   geom_smooth()
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_smooth()
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = fl)) +
+  geom_point()
+

@@ -44,7 +44,13 @@ mpg %>%
 
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_point(mapping = aes(color = class)) +
-  geom_smooth()
+  geom_smooth() +
+  labs(title = "Displacement vs HWY (no jitter)")
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class), position = "jitter") +
+  geom_smooth() +
+  labs(title = "Displacement vs HWY (with jitter)")
 
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_point(mapping = aes(color = class)) +
@@ -67,13 +73,16 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = fl)) +
   geom_point()
 
 ggplot(data = mpg) +
-  geom_bar(mapping = aes(x = displ)) +
-  facet_wrap(~manufacturer, nrow = 2)
+  geom_bar(mapping = aes(x = displ, fill = drv))
 
-ggplot(data = mpg) +
+displ_hwy_summary <- ggplot(data = mpg) +
   stat_summary(mapping = aes(x = displ, y = hwy),
-    fun.ymin = min,
-    fun.ymax = max,
-    fun.y = median
-  ) + 
+     fun.ymin = min,
+     fun.ymax = max,
+     fun.y = median
+  )
+
+displ_hwy_summary
+
+displ_hwy_summary + 
   facet_wrap(~ year, nrow = 2)

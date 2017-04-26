@@ -12,6 +12,11 @@ mpg %>%
 
 View(
   mpg %>%
+    arrange(manufacturer, displ)
+  )
+
+View(
+  mpg %>%
     filter(hwy > 35) %>%
     arrange(hwy, manufacturer)
   ,"High HWY MPG"
@@ -61,3 +66,14 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = fl)) +
   geom_point()
 
+ggplot(data = mpg) +
+  geom_bar(mapping = aes(x = displ)) +
+  facet_wrap(~manufacturer, nrow = 2)
+
+ggplot(data = mpg) +
+  stat_summary(mapping = aes(x = displ, y = hwy),
+    fun.ymin = min,
+    fun.ymax = max,
+    fun.y = median
+  ) + 
+  facet_wrap(~ year, nrow = 2)

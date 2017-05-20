@@ -2,8 +2,7 @@ library(tidyverse)
 
 rm(list=ls())
 cat("\014")
-dev.off(dev.list()["RStudioGD"])
-
+graphics.off()
 
 mpg <- ggplot2::mpg %>% filter(class != "2seater")
 

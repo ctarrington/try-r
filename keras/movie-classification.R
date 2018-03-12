@@ -2,6 +2,9 @@ library(tidyverse)
 library(dplyr)
 library(keras)
 
+source('./vectorize-sequences.R')
+source('./decode-word.R')
+
 word_index <- dataset_imdb_word_index()
 reverse_word_index <- names(word_index)
 names(reverse_word_index) <- word_index
@@ -10,18 +13,6 @@ reverse_word_index[4]
 reverse_word_index[[4]]
 word_index$fawn
 
-decodeWord <- function(index) {
-  word <- if (index >= 3) { 
-    reverse_word_index[[as.character(index - 3)]]
-  }
-  
-  if (!is.null(word)) {
-    word 
-  } else {
-    '?'
-  }
-}
-
 imdb <- dataset_imdb(num_words = 10000)
 c(c(train_data, train_labels), c(test_data, test_labels)) %<-% imdb
 
@@ -29,14 +20,6 @@ c(c(train_data, train_labels), c(test_data, test_labels)) %<-% imdb
 decoded_review <- sapply(train_data[[1]], decodeWord)
 decoded_review
 train_labels[[1]]
-
-vectorize_sequences <- function(sequences, dimension = 10000) {
-  results <- matrix(0, nrow = length(sequences), ncol = dimension)
-  for (i in 1:length(sequences)) {
-    results[i, sequences[[i]]] <- 1
-  }
-  results
-}
 
 x_train <- vectorize_sequences(train_data)
 x_test <- vectorize_sequences(test_data)

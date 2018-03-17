@@ -37,7 +37,15 @@ for (digit_index in 1:10) {
 predictions <- model %>% predict_classes(test_images)
 results <- tibble(row=1:nrow(test_labels))
 
-results %>% 
+results <- results %>% 
   mutate(predicted = predictions[row]) %>%
-  mutate(actual = argmax(test_labels[row, ], rows = TRUE) - 1)
+  mutate(actual = argmax(test_labels[row, ], rows = TRUE) - 1) %>%
+  mutate(predicted = as.integer(predicted)) %>% 
+  mutate(actual = as.integer(actual))
+
+errors <- results %>% 
+  filter(actual != predicted) %>% 
+  group_by(predicted, actual) %>%
+  summarise(count = n()) %>% 
+  arrange(desc(count))
 

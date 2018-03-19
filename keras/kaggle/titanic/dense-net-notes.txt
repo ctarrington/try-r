@@ -1,0 +1,30 @@
+
+Without families
+1024, 2048, 1024 -> .86, .88, .78,
+2048, 4096, 2048 -> .64, .77
+1600, 2400, 1600 -> .81,
+
+with families
+1024, 2048, -- -> .89, .72, .80
+1024, 2048, 1024 -> .83, .83, .83
+2048, 4096, 2048 with weight regularization -> terrible
+2048, 4096, 2048 no weight regularization -> .77, .77,
+2048, 4096, 2048 50% dropout -> .86, .86
+2048, 4096, 2048 25% dropout -> .83, .72
+4096, 2048 -> under fitted
+4096, 2048, 1024 -> .75
+
+1024, 2048, 1024 50% dropout -> .86, .80, .80
+
+with families and one hot class
+1024, 2048, 1024 50% dropout -> .92, .80, .88, .83, .86
+2048, 4096, 2048 50% dropout -> .80, .94, .88, .80, .83
+
+with families and one hot class and missing ages kept as -max_age
+1024, 2048, 1024 50% dropout -> .8, .82, .82
+2048, 4096, 2048 50% dropout -> .84, .75
+512, 1024, 512 50% dropout -> .84, .84,
+256, 512, 256 50% dropout -> .8, .8, .88
+256, 512, 256 no dropout -> .82, .84, .8
+
+512,1024 with 60% dropout -> .93, .84, .75

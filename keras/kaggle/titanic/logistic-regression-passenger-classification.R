@@ -4,6 +4,10 @@ library(zeallot)
 
 source('../../sampling.R')
 
+# Titles with very low cell counts to be combined to "rare" level
+rare_title <- c('Dona', 'Lady', 'the Countess','Capt', 'Col', 'Don', 
+                'Dr', 'Major', 'Rev', 'Sir', 'Jonkheer')
+
 col_spec <- cols(
   PassengerId = col_integer(),
   Pclass = col_factor(levels = c('1', '2', '3')),
@@ -29,22 +33,45 @@ max_parch <- max(all_train$Parch)
 
 conditionData <- function(tbl) {
   complete <- tbl %>% 
-    mutate(Age = ifelse(is.na(Age), mean_age, Age))
+    filter(!is.na(Age)) %>% 
+    mutate(Survived = ifelse(Survived == 0, 'Died', 'Survived')) %>% 
+    mutate(Survived = factor(Survived, levels = c('Died', 'Survived'))) %>%
+    mutate(FamilySize = Parch + SibSp + 1) %>% 
+    mutate(SingleFamilySize = FamilySize == 1) %>% 
+    mutate(SmallFamilySize = FamilySize > 1 & FamilySize < 5) %>% 
+    mutate(Title = gsub('(.*, )|(\\..*)', '', Name)) %>%
+    rowwise() %>%
+    mutate(Surname = strsplit(Name, split = '[,.]')[[1]][1])
   
+  complete$Title[complete$Title == 'Mlle']        <- 'Miss' 
+  complete$Title[complete$Title == 'Ms']          <- 'Miss'
+  complete$Title[complete$Title == 'Mme']         <- 'Mrs' 
+  complete$Title[complete$Title %in% rare_title]  <- 'Rare Title'
+
   limited <- complete %>%
-    select(-Name, -Cabin, -Ticket, -Embarked, -Parch, -SibSp, -PassengerId)
+    select(-Surname, -FamilySize, -Name, -Cabin, -Ticket, -Embarked, -Parch, -SibSp, -PassengerId, -Fare)
 }
 
 all_train <- conditionData(all_train)
-c(train_data, validation_data) %<-%  split_data(all_train, 0.8)
+
+table(all_train$Sex, all_train$Title)
+table(all_train$Survived, all_train$Title)
+
+c(train_data, validation_data) %<-%  split_data(all_train, 0.80)
 
 fit <- glm(Survived ~ ., data = train_data, family = binomial())
 summary(fit)
 
 prob <- predict(fit, validation_data, type = 'response')
 
+pred <- factor(prob > 0.5, levels=c(FALSE, TRUE), labels = c('Died', 'Survived'))
+perf <- table(validation_data$Survived, pred, dnn=c('Actual', 'Predicted'))
+perf
+
 performance <- validation_data %>% 
   bind_cols(as.tibble(prob)) %>%
-  mutate(predictedSurvived = ifelse(value < 0.5, 1, 0)) %>% 
+  mutate(predictedSurvived = ifelse(value > 0.5, 'Survived', 'Died')) %>% 
   mutate(accurate = Survived == predictedSurvived)
+
+count(performance %>% filter(accurate)) / count(performance)
 

@@ -10,6 +10,7 @@ numbers <- tribble(
 
 numbers[2:3]
 
+# the dot allows you to reference the tibble in a pipe sequence
 numbers %>% 
   filter(a %% 2 == 0) %>%
   .[2:3]
